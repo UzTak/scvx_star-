@@ -43,8 +43,8 @@ def scvx_compute_dJdL(sol, sol_prev, prob, iter):
     g_sol, _ = compute_g(sol["z"], prob)
     h_sol, _ = compute_h(sol["z"], prob)
     
-    g_sol_prev, _ = compute_g(sol_prev["z"], prob)
-    h_sol_prev, _ = compute_h(sol_prev["z"], prob)
+    g_sol_prev = prob.g_sol_prev
+    h_sol_prev = prob.h_sol_prev
     
     J0 = compute_f0(sol["z"],      prob).value + compute_P(g_sol,      h_sol,      w, λ, μ).value   
     J1 = compute_f0(sol_prev["z"], prob).value + compute_P(g_sol_prev, h_sol_prev, w, λ, μ).value  
@@ -67,6 +67,9 @@ def scvx_compute_dJdL(sol, sol_prev, prob, iter):
     if ΔL < 0 and iter!=0:
         # raise ValueError("ΔL must be positive! ")
         print("WARNING: ΔL must be positive! ")
+        
+    prob.g_sol_prev = g_sol
+    prob.h_sol_prev = h_sol
     
     return ΔJ, ΔL, χ
 
@@ -105,6 +108,7 @@ def solve_scvx(prob):
     ΔJ, χ, δ = np.inf, np.inf, np.inf
     g, _ = compute_g(sol_prev["z"], prob)
     h, _ = compute_h(sol_prev["z"], prob)
+    prob.g_sol_prev, prob.h_sol_prev = g, h 
     prob.pen_λ, prob.pen_μ = np.zeros(np.shape(g)), np.zeros(np.shape(h))   
     
     log = {"ϵopt":[], "ϵfeas":[], "f0":[], "P":[]}

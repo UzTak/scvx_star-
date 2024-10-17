@@ -81,7 +81,7 @@ def compute_P(g, h, pen_w, pen_λ, pen_μ):
     zero = cp.Constant((np.zeros(h.shape)))
     hp = cp.maximum(zero, h)
     
-    P = pen_λ.T @ g + pen_μ.T @ h + pen_w/2 * (cp.norm(g)**2 + cp.norm(hp)**2)
+    P = pen_λ.T @ g + pen_μ.T @ hp + pen_w/2 * (cp.norm(g)**2 + cp.norm(hp)**2)
     
     return P
 
